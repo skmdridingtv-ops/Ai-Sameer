@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI Sameer</title>
+<style>
+:root{--bg:#0a1a3a;--panel:#12285a;--line:#2b4a8f;--text:#eef3ff;--mute:#a9bbe0;--gold:#f2c14e;--bad:#ff8b8b;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;line-height:1.45;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+header{padding:16px;border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:12px;border:2px solid var(--gold);display:grid;place-items:center;font-size:24px;background:var(--panel)}
+h1{font-size:19px;margin:0;color:var(--gold)}
+small,.mute{color:var(--mute)}
+main{padding:16px;max-width:560px;margin:auto}
+h2{font-size:17px;margin:4px 0 12px}
+form{display:grid;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}
+input,select,button{font:inherit;color:var(--text)}
+input,select{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;width:100%}
+button{background:var(--gold);color:#1a1405;border:0;border-radius:8px;padding:11px 14px;font-weight:700;cursor:pointer}
+button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #6bb6ff;outline-offset:2px}
+#lg{margin-left:auto;width:auto;max-width:42%}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+.tile{background:var(--panel);color:var(--text);border:1px solid var(--line);padding:18px 8px;font-size:16px}
+.big{width:100%;padding:14px;font-size:16px}
+.low{color:var(--bad)}
+.card{display:flex;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px}
+.card img,.card .ph{width:84px;height:84px;border-radius:8px;object-fit:cover;flex:none;background:var(--bg);display:grid;place-items:center;font-size:30px}
+.card h3{margin:0 0 2px;font-size:15px}.card p{margin:0;font-size:13px;color:var(--mute)}.card a{color:var(--gold);font-size:13px}
+iframe{width:100%;height:240px;border:1px solid var(--line);border-radius:10px;margin:8px 0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button.card{width:100%;text-align:left;color:var(--text);align-items:center;font-weight:400}
+.card.sel{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.nm{font-weight:700;font-size:16px}
+.fare{margin-left:auto;font-size:20px;font-weight:700;color:var(--gold)}
+.logo{overflow:hidden;padding:0}
+.logo img{width:100%;height:100%;object-fit:cover;display:block}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div id="rcv"></div>
+<header><div class="logo" id="lo"><img alt="AI Sameer" src="data:image/webp;base64,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"></div><div><h1>AI Sameer</h1><small id="sb"></small></div>
+<select id="lg" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option><option value="kn">ಕನ್ನಡ</option><option value="te">తెలుగు</option></select></header>
+<main id="v"></main>
+<script>
+var ROLE="customer";          /* customer or captain */
+var API="";                   /* paste your OTP server URL here, e.g. https://your-server.com */
+var RIDE_API="";              /* paste your ride server URL here (can be the same server as above) */
+var FB={apiKey:"AIzaSyAYdOe2hwbiWyXB4xw1nw5MxHpxRJ90G-A",authDomain:"ai-sameer.firebaseapp.com",projectId:"ai-sameer",storageBucket:"ai-sameer.firebasestorage.app",messagingSenderId:"863476808664",appId:"1:863476808664:web:cdd86c3eefd9a4fd3850ad"};
+var fbWant=!!FB.apiKey,fbOn=false,auth=null,fdb=null,confirmation=null,verifier=null,uid="";
+var R={customer:{sub:"Customer App",ic:"\uD83D\uDECD\uFE0F",tiles:["\uD83C\uDFCD\uFE0F Bike","\uD83D\uDE97 Rides","\uD83D\uDCE6 Parcel","\uD83C\uDF7D\uFE0F Food","\uD83D\uDEFA Auto","\uD83D\uDEB2 EV Cycle"]},
+captain:{sub:"Delivery Captain",ic:"\uD83D\uDEF5",tiles:["\uD83D\uDEF5 Trips","\uD83D\uDCCD Location","\uD83D\uDCE6 Parcels","\uD83D\uDEE1\uFE0F Safety"]}}[ROLE];
+var T={
+en:{fbfail:"Firebase could not load. Check your internet connection and reload.",noserver:"Ride server not connected. Set RIDE_API in the file.",rfail:"Could not reach the ride server. Try again.",finding:"Looking for a captain…",accd:"Captain accepted",done:"Ride completed",canc:"Ride cancelled",cancel:"Cancel ride",newride:"Book another ride",fare:"Fare",ride:"Book a ride",pickup:"Pickup location",drop:"Drop location",getfare:"Show fare",dist:"Distance",est:"Estimated fare",notfound:"Could not find that place. Add the area or city name and try again.",req:"Request ride",toofar:"Too far",fnote:"Estimated fare. Final fare can change with traffic and waiting time.",wait:"Calculating…",food:"Restaurants",live:"Use my live location",map:"Open in Google Maps",more:"Load more",back:"Back",search:"Search restaurants",locfail:"Could not get your location. Allow location access and try again.",nokey:"Showing a sample list. Add a Google Places API key in the file to load every restaurant with photos.",login:"Login",mobile:"Mobile number",sendotp:"Send OTP",otp:"Enter 6-digit OTP",verify:"Verify and log in",badph:"Enter a valid 10-digit mobile number.",badotp:"Wrong OTP. Try again.",demo:"Demo mode: no SMS service is connected, so your OTP is:",sendfail:"Could not send OTP. Check the number and try again.",logout:"Log out",hello:"Welcome",soon:"Coming soon",goon:"Go online",goff:"Online — tap to go offline"},
+hi:{fbfail:"Firebase लोड नहीं हो सका। इंटरनेट जांचें और पेज फिर खोलें।",noserver:"राइड सर्वर जुड़ा नहीं है। फ़ाइल में RIDE_API डालें।",rfail:"राइड सर्वर तक नहीं पहुंच सके। फिर कोशिश करें।",finding:"कैप्टन ढूंढ रहे हैं…",accd:"कैप्टन ने स्वीकार किया",done:"राइड पूरी हुई",canc:"राइड रद्द हुई",cancel:"राइड रद्द करें",newride:"एक और राइड बुक करें",fare:"किराया",ride:"राइड बुक करें",pickup:"पिकअप लोकेशन",drop:"ड्रॉप लोकेशन",getfare:"किराया देखें",dist:"दूरी",est:"अनुमानित किराया",notfound:"वह जगह नहीं मिली। इलाके या शहर का नाम जोड़कर फिर कोशिश करें।",req:"राइड का अनुरोध करें",toofar:"बहुत दूर",fnote:"यह अनुमानित किराया है। ट्रैफिक और इंतज़ार के हिसाब से अंतिम किराया बदल सकता है।",wait:"गणना हो रही है…",food:"रेस्टोरेंट",live:"मेरी लाइव लोकेशन इस्तेमाल करें",map:"Google Maps में खोलें",more:"और दिखाएं",back:"वापस",search:"रेस्टोरेंट खोजें",locfail:"आपकी लोकेशन नहीं मिली। लोकेशन की अनुमति दें और फिर कोशिश करें।",nokey:"नमूना सूची दिख रही है। सभी रेस्टोरेंट फोटो के साथ दिखाने के लिए फ़ाइल में Google Places API key जोड़ें।",login:"लॉगिन",mobile:"मोबाइल नंबर",sendotp:"OTP भेजें",otp:"6 अंकों का OTP डालें",verify:"सत्यापित करें और लॉगिन करें",badph:"सही 10 अंकों का मोबाइल नंबर डालें।",badotp:"गलत OTP। फिर कोशिश करें।",demo:"डेमो मोड: SMS सेवा जुड़ी नहीं है, इसलिए आपका OTP है:",sendfail:"OTP नहीं भेजा जा सका। नंबर जांचें और फिर कोशिश करें।",logout:"लॉग आउट",hello:"स्वागत है",soon:"जल्द आ रहा है",goon:"ऑनलाइन जाएं",goff:"ऑनलाइन — ऑफलाइन जाने के लिए दबाएं"},
+mr:{fbfail:"Firebase लोड झाले नाही. इंटरनेट तपासा आणि पेज पुन्हा उघडा.",noserver:"राइड सर्व्हर जोडलेला नाही. फाइलमध्ये RIDE_API टाका.",rfail:"राइड सर्व्हरशी संपर्क झाला नाही. पुन्हा प्रयत्न करा.",finding:"कॅप्टन शोधत आहोत…",accd:"कॅप्टनने स्वीकारले",done:"राइड पूर्ण झाली",canc:"राइड रद्द झाली",cancel:"राइड रद्द करा",newride:"आणखी एक राइड बुक करा",fare:"भाडे",ride:"राइड बुक करा",pickup:"पिकअप लोकेशन",drop:"ड्रॉप लोकेशन",getfare:"भाडे पहा",dist:"अंतर",est:"अंदाजे भाडे",notfound:"ते ठिकाण सापडले नाही. परिसर किंवा शहराचे नाव जोडून पुन्हा प्रयत्न करा.",req:"राइडची विनंती करा",toofar:"खूप दूर",fnote:"हे अंदाजे भाडे आहे. ट्रॅफिक आणि प्रतीक्षेनुसार अंतिम भाडे बदलू शकते.",wait:"मोजत आहे…",food:"रेस्टॉरंट",live:"माझे लाइव्ह लोकेशन वापरा",map:"Google Maps मध्ये उघडा",more:"आणखी दाखवा",back:"मागे",search:"रेस्टॉरंट शोधा",locfail:"तुमचे लोकेशन मिळाले नाही. लोकेशन परवानगी द्या आणि पुन्हा प्रयत्न करा.",nokey:"नमुना यादी दिसत आहे. सर्व रेस्टॉरंट फोटोंसह दाखवण्यासाठी फाइलमध्ये Google Places API key जोडा.",login:"लॉगिन",mobile:"मोबाइल नंबर",sendotp:"OTP पाठवा",otp:"6 अंकी OTP टाका",verify:"पडताळा आणि लॉगिन करा",badph:"योग्य 10 अंकी मोबाइल नंबर टाका.",badotp:"चुकीचा OTP. पुन्हा प्रयत्न करा.",demo:"डेमो मोड: SMS सेवा जोडलेली नाही, म्हणून तुमचा OTP:",sendfail:"OTP पाठवता आला नाही. नंबर तपासा आणि पुन्हा प्रयत्न करा.",logout:"लॉग आउट",hello:"स्वागत",soon:"लवकरच येत आहे",goon:"ऑनलाइन व्हा",goff:"ऑनलाइन — ऑफलाइन होण्यासाठी दाबा"},
+kn:{fbfail:"Firebase ಲೋಡ್ ಆಗಲಿಲ್ಲ. ಇಂಟರ್ನೆಟ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ತೆರೆಯಿರಿ.",noserver:"ರೈಡ್ ಸರ್ವರ್ ಜೋಡಿಸಿಲ್ಲ. ಫೈಲ್‌ನಲ್ಲಿ RIDE_API ಹಾಕಿ.",rfail:"ರೈಡ್ ಸರ್ವರ್ ತಲುಪಲಾಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",finding:"ಕ್ಯಾಪ್ಟನ್ ಹುಡುಕುತ್ತಿದ್ದೇವೆ…",accd:"ಕ್ಯಾಪ್ಟನ್ ಒಪ್ಪಿಕೊಂಡರು",done:"ರೈಡ್ ಪೂರ್ಣಗೊಂಡಿದೆ",canc:"ರೈಡ್ ರದ್ದಾಗಿದೆ",cancel:"ರೈಡ್ ರದ್ದುಮಾಡಿ",newride:"ಇನ್ನೊಂದು ರೈಡ್ ಬುಕ್ ಮಾಡಿ",fare:"ದರ",ride:"ರೈಡ್ ಬುಕ್ ಮಾಡಿ",pickup:"ಪಿಕಪ್ ಲೊಕೇಶನ್",drop:"ಡ್ರಾಪ್ ಲೊಕೇಶನ್",getfare:"ದರ ನೋಡಿ",dist:"ದೂರ",est:"ಅಂದಾಜು ದರ",notfound:"ಆ ಸ್ಥಳ ಸಿಗಲಿಲ್ಲ. ಪ್ರದೇಶ ಅಥವಾ ನಗರದ ಹೆಸರು ಸೇರಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",req:"ರೈಡ್ ವಿನಂತಿಸಿ",toofar:"ತುಂಬಾ ದೂರ",fnote:"ಇದು ಅಂದಾಜು ದರ. ಟ್ರಾಫಿಕ್ ಮತ್ತು ಕಾಯುವ ಸಮಯದ ಆಧಾರದ ಮೇಲೆ ಅಂತಿಮ ದರ ಬದಲಾಗಬಹುದು.",wait:"ಲೆಕ್ಕ ಹಾಕುತ್ತಿದೆ…",food:"ರೆಸ್ಟೋರೆಂಟ್‌ಗಳು",live:"ನನ್ನ ಲೈವ್ ಲೊಕೇಶನ್ ಬಳಸಿ",map:"Google Maps ನಲ್ಲಿ ತೆರೆಯಿರಿ",more:"ಇನ್ನಷ್ಟು ತೋರಿಸಿ",back:"ಹಿಂದೆ",search:"ರೆಸ್ಟೋರೆಂಟ್ ಹುಡುಕಿ",locfail:"ನಿಮ್ಮ ಲೊಕೇಶನ್ ಸಿಗಲಿಲ್ಲ. ಲೊಕೇಶನ್ ಅನುಮತಿ ನೀಡಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",nokey:"ಮಾದರಿ ಪಟ್ಟಿ ತೋರಿಸಲಾಗುತ್ತಿದೆ. ಎಲ್ಲಾ ರೆಸ್ಟೋರೆಂಟ್‌ಗಳನ್ನು ಫೋಟೋಗಳೊಂದಿಗೆ ತೋರಿಸಲು ಫೈಲ್‌ನಲ್ಲಿ Google Places API key ಸೇರಿಸಿ.",login:"ಲಾಗಿನ್",mobile:"ಮೊಬೈಲ್ ಸಂಖ್ಯೆ",sendotp:"OTP ಕಳುಹಿಸಿ",otp:"6 ಅಂಕಿಯ OTP ನಮೂದಿಸಿ",verify:"ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಲಾಗಿನ್ ಮಾಡಿ",badph:"ಸರಿಯಾದ 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ.",badotp:"ತಪ್ಪಾದ OTP. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",demo:"ಡೆಮೊ ಮೋಡ್: SMS ಸೇವೆ ಜೋಡಿಸಿಲ್ಲ, ಆದ್ದರಿಂದ ನಿಮ್ಮ OTP:",sendfail:"OTP ಕಳುಹಿಸಲಾಗಲಿಲ್ಲ. ಸಂಖ್ಯೆ ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",logout:"ಲಾಗ್ ಔಟ್",hello:"ಸ್ವಾಗತ",soon:"ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ",goon:"ಆನ್‌ಲೈನ್ ಆಗಿ",goff:"ಆನ್‌ಲೈನ್ — ಆಫ್‌ಲೈನ್ ಆಗಲು ಒತ್ತಿ"},
+te:{fbfail:"Firebase లోడ్ కాలేదు. ఇంటర్నెట్ చూసి పేజీ మళ్లీ తెరవండి.",noserver:"రైడ్ సర్వర్ కనెక్ట్ కాలేదు. ఫైల్‌లో RIDE_API పెట్టండి.",rfail:"రైడ్ సర్వర్‌ని చేరలేకపోయాము. మళ్లీ ప్రయత్నించండి.",finding:"కెప్టెన్ కోసం వెతుకుతున్నాం…",accd:"కెప్టెన్ అంగీకరించారు",done:"రైడ్ పూర్తయింది",canc:"రైడ్ రద్దు అయింది",cancel:"రైడ్ రద్దు చేయండి",newride:"మరో రైడ్ బుక్ చేయండి",fare:"ఛార్జీ",ride:"రైడ్ బుక్ చేయండి",pickup:"పికప్ లొకేషన్",drop:"డ్రాప్ లొకేషన్",getfare:"ఛార్జీ చూపించు",dist:"దూరం",est:"అంచనా ఛార్జీ",notfound:"ఆ ప్రదేశం దొరకలేదు. ప్రాంతం లేదా నగరం పేరు కలిపి మళ్లీ ప్రయత్నించండి.",req:"రైడ్ కోరండి",toofar:"చాలా దూరం",fnote:"ఇది అంచనా ఛార్జీ. ట్రాఫిక్, ఆగిన సమయాన్ని బట్టి తుది ఛార్జీ మారవచ్చు.",wait:"లెక్కిస్తున్నాం…",food:"రెస్టారెంట్లు",live:"నా లైవ్ లొకేషన్ వాడండి",map:"Google Mapsలో తెరవండి",more:"ఇంకా చూపించు",back:"వెనుకకు",search:"రెస్టారెంట్ వెతకండి",locfail:"మీ లొకేషన్ దొరకలేదు. లొకేషన్ అనుమతి ఇచ్చి మళ్లీ ప్రయత్నించండి.",nokey:"నమూనా జాబితా చూపిస్తున్నాం. అన్ని రెస్టారెంట్లు ఫోటోలతో రావాలంటే ఫైల్‌లో Google Places API key జోడించండి.",login:"లాగిన్",mobile:"మొబైల్ నంబర్",sendotp:"OTP పంపండి",otp:"6 అంకెల OTP ఇవ్వండి",verify:"ధృవీకరించి లాగిన్ అవ్వండి",badph:"సరైన 10 అంకెల మొబైల్ నంబర్ ఇవ్వండి.",badotp:"OTP తప్పు. మళ్లీ ప్రయత్నించండి.",demo:"డెమో మోడ్: SMS సేవ కనెక్ట్ కాలేదు, అందుకే మీ OTP:",sendfail:"OTP పంపలేకపోయాము. నంబర్ చూసి మళ్లీ ప్రయత్నించండి.",logout:"లాగ్ అవుట్",hello:"స్వాగతం",soon:"త్వరలో వస్తుంది",goon:"ఆన్‌లైన్‌కి వెళ్లండి",goff:"ఆన్‌లైన్‌లో ఉన్నారు — ఆఫ్‌లైన్‌కి నొక్కండి"}};
+var PLACES_KEY="";   /* optional: Google Places API key (restrict it to your website) to load ALL restaurants with photos */
+var CITY={yem:{n:"Yemmiganur",f:1},blr:{n:"Bengaluru",f:1}}; /* f = fare multiplier per city, e.g. 1.2 = 20% higher fares */
+var SEED={yem:[
+["Hemasri Fish Andhra Lounge Family Restaurant","Shiva Circle",4.2,15.7638,77.4843,"ChIJkQpQ3mZBtjsRvpvz6eyEoTc"],
+["Triniti Delecious Paradise A/C Family Restaurant","Somappa Nagar",4.5,15.7621,77.4672,"ChIJ560CJABHtjsRlM51xm2g9sE"],
+["D'Resto","Adoni - Yemmiganur Rd",4.5,15.7588,77.4625,"ChIJJ2H3Rg1HtjsRX-DP2eaKYPI"],
+["Lucky Star Restaurant","Annamayya Circle",4.6,15.7617,77.4675,"ChIJP1GEQQBHtjsR6rnB3xCtwx8"],
+["KGF Paradise Family Restaurant","Indira Nagar",4.2,15.7616,77.4765,"ChIJswvCCURBtjsRcVtGDJBDiAQ"],
+["Subhan Star Hotel","Indira Nagar",4.0,15.7625,77.4797,"ChIJFWscODFBtjsRWpRt_Fm2KnI"],
+["Hyderabad Dum Biriyani Hotel","Somappa Nagar",3.6,15.7737,77.4716,"ChIJe5UZwrRAtjsRbNDmNT_d4oo"],
+["Beef Biryani Hotel","Shakunthala Circle",3.9,15.7708,77.4862,"ChIJFwHgoLhAtjsRs9WnV6CYl54"]],
+blr:[
+["Olive Beach","Ashok Nagar",4.5,12.9669,77.6081,"ChIJ03xVrSoUrjsRfYzAUhym4eY"],
+["Farmlore","Bagalur",4.7,13.1273,77.6394,"ChIJH1j-ke8ZrjsR157H5DoLZhE"],
+["Lotus Pavilion, ITC Gardenia","Ashok Nagar",4.5,12.9670,77.5958,"ChIJW0EJK3YWrjsRpa39RV0Fy-8"],
+["Shiro","UB City, Vittal Mallya Rd",4.5,12.9719,77.5966,"ChIJ897J43kWrjsRwLzr4oSg67c"],
+["PHURR","Jayanagar",4.7,12.9327,77.5830,"ChIJ05c7FwAVrjsR6MdIv_EE_E4"],
+["Malgudi Mylari Mane","Koramangala",4.4,12.9375,77.6176,"ChIJT_24X_kVrjsRtqZhKQncQK0"],
+["Vidyarthi Bhavan","Gandhi Bazaar",4.2,12.9450,77.5714,"ChIJNdCK6PIVrjsR3I4feeftf-0"],
+["Bangalore Thindies","Shivaji Nagar",4.1,12.9811,77.6042,"ChIJ8YjR-I4XrjsRCaSr6Y-3510"],
+["Maayaa - Coastal Treasures of South India","High Grounds",4.6,12.9858,77.5881,"ChIJHbDsKtQXrjsRGu-RAKJGjbs"],
+["Karavalli","Residency Rd",4.5,12.9724,77.6087,"ChIJ5QD7Rn4WrjsRH_yAmEEDe3c"]]};
+for(var ck in SEED)SEED[ck]=SEED[ck].map(function(a){return{n:a[0],a:a[1],r:a[2],lat:a[3],lng:a[4],id:a[5],ph:""}});
+var food={city:"yem",q:"",pos:null,list:[],tok:"",msg:"",live:false},screen="home";
+var KEY="aisameer_"+ROLE,$=function(i){return document.getElementById(i)};
+var lang="te",phone="",pending=null,otpCode="",err="",note="",online=false;
+try{lang=localStorage.getItem("aisameer_lang")||"te";phone=localStorage.getItem(KEY+"_s")||""}catch(e){}
+function t(k){return(T[lang]||T.en)[k]||T.en[k]}
+function call(p,b,cb){fetch(API+p,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).then(function(r){return r.json()}).then(cb).catch(function(){cb(null)})}
+function enter(){phone=pending;pending=null;err="";try{localStorage.setItem(KEY+"_s",phone)}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function dist(a,b,c,d){var r=Math.PI/180,x=(c-a)*r,y=(d-b)*r,k=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*r)*Math.cos(c*r)*Math.sin(y/2)*Math.sin(y/2);return 12742*Math.asin(Math.sqrt(k))}
+function foodView(){
+ var base=food.live?food.list:SEED[food.city],ql=food.q.toLowerCase();
+ var L=base.filter(function(x){return !ql||x.n.toLowerCase().indexOf(ql)>-1});
+ if(food.pos)L=L.map(function(x){x.d=dist(food.pos.lat,food.pos.lng,x.lat,x.lng);return x}).sort(function(a,b){return a.d-b.d});
+ var near=food.pos?food.pos.lat+","+food.pos.lng:CITY[food.city].n;
+ var h='<button class="ghost" id="fb">\u2190 '+t("back")+'</button><h2>\uD83C\uDF7D\uFE0F '+t("food")+'</h2>';
+ h+='<div class="row2"><select id="fc" aria-label="City">'+Object.keys(CITY).map(function(k){return '<option value="'+k+'"'+(k==food.city?" selected":"")+'>'+CITY[k].n+'</option>'}).join("")+'</select><button id="fl">\uD83D\uDCCD '+t("live")+'</button></div>';
+ h+='<input id="fq" placeholder="'+t("search")+'" aria-label="'+t("search")+'" value="'+esc(food.q)+'" style="margin-top:8px">';
+ h+='<iframe title="Google Map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q='+encodeURIComponent((food.q||"restaurants")+" near "+near)+'&z=14&output=embed"></iframe>';
+ if(food.msg)h+='<p class="mute" role="status">'+food.msg+'</p>';
+ L.forEach(function(x){h+='<div class="card">'+(x.ph?'<img alt="" src="'+x.ph+'">':'<div class="ph">\uD83C\uDF7D\uFE0F</div>')+'<div><h3>'+esc(x.n)+'</h3><p>\u2B50 '+(x.r||"-")+' \u00B7 '+esc(x.a||"")+(x.d!=null?' \u00B7 '+x.d.toFixed(1)+' km':'')+'</p><a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(x.n)+'&query_place_id='+x.id+'" target="_blank" rel="noopener">'+t("map")+'</a></div></div>'});
+ if(food.live&&food.tok)h+='<button id="fm">'+t("more")+'</button>';
+ if(!PLACES_KEY)h+='<p class="mute">'+t("nokey")+'</p>';
+ return h}
+function loadPlaces(more){
+ if(!PLACES_KEY)return;
+ var b={textQuery:(food.q||"restaurants")+" in "+CITY[food.city].n,pageSize:20};
+ if(food.pos)b.locationBias={circle:{center:{latitude:food.pos.lat,longitude:food.pos.lng},radius:5000}};
+ if(more&&food.tok)b.pageToken=food.tok;
+ fetch("https://places.googleapis.com/v1/places:searchText",{method:"POST",headers:{"Content-Type":"application/json","X-Goog-Api-Key":PLACES_KEY,"X-Goog-FieldMask":"places.id,places.displayName,places.formattedAddress,places.rating,places.location,places.photos,nextPageToken"},body:JSON.stringify(b)}).then(function(r){return r.json()}).then(function(d){
+  var ps=(d.places||[]).map(function(p){return{n:p.displayName&&p.displayName.text||"",a:p.formattedAddress,r:p.rating,id:p.id,lat:p.location.latitude,lng:p.location.longitude,ph:p.photos&&p.photos[0]?"https://places.googleapis.com/v1/"+p.photos[0].name+"/media?maxHeightPx=300&key="+PLACES_KEY:""}});
+  food.list=more?food.list.concat(ps):ps;food.tok=d.nextPageToken||"";food.live=true;render()}).catch(function(){render()})}
+/* Sample fares in Rs: b = base fare, p = per km, m = minimum fare, mx = max km. Change these to your own rates. */
+var VEH=[{k:"bike",i:"\uD83C\uDFCD\uFE0F",n:"Bike",b:20,p:7,m:30},{k:"ev",i:"\uD83D\uDEB2",n:"EV Cycle",b:15,p:5,m:25,mx:10},{k:"scooter",i:"\uD83D\uDEF5",n:"Scooter",b:20,p:8,m:35},{k:"auto",i:"\uD83D\uDEFA",n:"Auto",b:30,p:12,m:40},{k:"mini",i:"\uD83D\uDE97",n:"Car \u00B7 Mini",b:50,p:14,m:80},{k:"sedan",i:"\uD83D\uDE98",n:"Car \u00B7 Sedan",b:60,p:17,m:100},{k:"suv",i:"\uD83D\uDE99",n:"Car \u00B7 SUV",b:80,p:22,m:130}];
+var GRP={bike:["bike","scooter"],car:["mini","sedan","suv"],auto:["auto"],ev:["ev"]}; /* which vehicles each home button shows */
+var ride={grp:"car",city:"yem",id:"",st:"",cap:"",fare:0,sel:"mini",pu:"",dr:"",pc:null,dc:null,km:0,min:0,busy:false,msg:"",note:"",usePos:false};
+function goAttr(x){var g=x.indexOf("Food")>-1?"food":x.indexOf("Bike")>-1?"bike":x.indexOf("Rides")>-1?"car":x.indexOf("Auto")>-1?"auto":x.indexOf("EV")>-1?"ev":"";return g?'data-go="'+g+'"':'data-soon="1"'}
+function vget(k){return VEH.filter(function(v){return v.k==k})[0]}
+function vehCards(){return GRP[ride.grp||"car"].map(function(k){var v=vget(k),far=v.mx&&ride.km>v.mx;return '<button type="button" class="card'+(ride.sel==k?' sel':'')+'" data-veh="'+k+'"><span class="ph">'+v.i+'</span><span class="nm">'+v.n+'</span><span class="fare">'+(ride.km>0&&!ride.busy?(far?t("toofar"):'\u20B9'+fareOf(v)):'')+'</span></button>'}).join("")}
+function fareOf(v){var f=CITY[ride.city].f||1;return Math.max(Math.round(v.m*f),Math.ceil((v.b+v.p*ride.km)*f/5)*5)}
+function wc(q){q=q.replace(/y?emmiganuru?/ig,"Yemmiganur");return q.toLowerCase().indexOf(CITY[ride.city].n.toLowerCase())>-1?q:q+", "+CITY[ride.city].n}
+function geo(q,cb){fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=in&q="+encodeURIComponent(q)).then(function(r){return r.json()}).then(function(d){cb(d&&d[0]?{lat:+d[0].lat,lng:+d[0].lon}:null)}).catch(function(){cb(null)})}
+function calc(){
+ ride.msg="";ride.note="";ride.km=0;ride.busy=true;render();
+ function fail(){ride.busy=false;ride.msg=t("notfound");render()}
+ function done(km,min){ride.km=Math.max(km,0.1);ride.min=min;ride.busy=false;render()}
+ function route(){
+  var a=ride.pc,b=ride.dc,fb=function(){var k=dist(a.lat,a.lng,b.lat,b.lng)*1.3;done(k,Math.round(k*3))};
+  fetch("https://router.project-osrm.org/route/v1/driving/"+a.lng+","+a.lat+";"+b.lng+","+b.lat+"?overview=false").then(function(r){return r.json()}).then(function(d){var r0=d.routes&&d.routes[0];if(r0)done(r0.distance/1000,Math.round(r0.duration/60));else fb()}).catch(fb)}
+ function second(){geo(wc(ride.dr),function(c){if(!c){fail();return}ride.dc=c;route()})}
+ if(ride.usePos&&ride.pc&&ride.pu==t("live"))second();
+ else geo(wc(ride.pu),function(c){if(!c){fail();return}ride.pc=c;ride.usePos=false;second()})}
+function rcall(m,p,b,cb){fetch(RIDE_API+p,{method:m,headers:{"Content-Type":"application/json"},body:b?JSON.stringify(b):undefined}).then(function(r){return r.json()}).then(cb).catch(function(){cb(null)})}
+var rtimer=null;
+function poll(){clearInterval(rtimer);rtimer=setInterval(function(){if(!ride.id)return;rcall("GET","/rides/"+ride.id,null,function(r){if(r&&r.status){ride.st=r.status;ride.cap=r.captain;render();if(r.status=="completed"||r.status=="cancelled")clearInterval(rtimer)}})},4000)}
+var unsubR=null;
+function watchRide(){if(unsubR)unsubR();unsubR=fdb.collection("rides").doc(ride.id).onSnapshot(function(d){var r=d.data();if(r){ride.st=r.status;ride.cap=r.captain;render()}})}
+function requestFB(){
+ var vv=VEH.filter(function(x){return x.k==ride.sel})[0];
+ if(vv.mx&&ride.km>vv.mx){ride.note=t("toofar");render();return}
+ ride.fare=fareOf(vv);var ref=fdb.collection("rides").doc();
+ ref.set({uid:uid,phone:phone,veh:vv.n,pu:ride.pu,dr:ride.dr,pc:ride.pc,dc:ride.dc,km:+ride.km.toFixed(2),fare:ride.fare,city:ride.city,status:"requested",captain:"",captainUid:"",createdMs:Date.now()}).then(function(){ride.id=ref.id;ride.st="requested";ride.cap="";ride.note="";watchRide();render()}).catch(function(){ride.note=t("rfail");render()})}
+function statusView(){
+ var st=ride.st,m={requested:t("finding"),accepted:t("accd")+(ride.cap?": +91 "+esc(ride.cap):""),completed:t("done"),cancelled:t("canc")}[st]||"";
+ var h='<h2>\uD83D\uDE95 '+t("ride")+'</h2><div class="card"><span><span class="nm">'+esc(ride.pu)+' \u2192 '+esc(ride.dr)+'</span><br><span class="mute">'+ride.km.toFixed(1)+' km \u00B7 '+t("fare")+' \u20B9'+ride.fare+'</span></span></div><p role="status"><b>'+m+'</b></p>';
+ if(st=="requested"||st=="accepted")h+='<button class="ghost" id="rcn">'+t("cancel")+'</button>';
+ else h+='<button class="big" id="rnw">'+t("newride")+'</button>';
+ return h}
+function rideView(){
+ if(ride.id)return statusView();
+ var h='<button class="ghost" id="rb">\u2190 '+t("back")+'</button><h2>\uD83D\uDE95 '+t("ride")+'</h2>';
+ h+=vehCards();
+ h+='<select id="rc" aria-label="City" style="margin-bottom:8px">'+Object.keys(CITY).map(function(k){return '<option value="'+k+'"'+(k==ride.city?" selected":"")+'>'+CITY[k].n+'</option>'}).join("")+'</select>';
+ h+='<input id="ru" placeholder="'+t("pickup")+'" aria-label="'+t("pickup")+'" value="'+esc(ride.pu)+'"><button class="ghost" id="rl" style="margin:6px 0;width:100%">\uD83D\uDCCD '+t("live")+'</button>';
+ h+='<input id="rd" placeholder="'+t("drop")+'" aria-label="'+t("drop")+'" value="'+esc(ride.dr)+'"><button class="big" id="rg" style="margin-top:8px">'+t("getfare")+'</button>';
+ if(ride.busy)h+='<p class="mute" role="status">'+t("wait")+'</p>';
+ if(ride.msg)h+='<p class="low" role="alert">'+ride.msg+'</p>';
+ if(ride.km>0&&!ride.busy){
+  h+='<p><b>'+t("dist")+':</b> '+ride.km.toFixed(1)+' km \u00B7 ~'+ride.min+' min</p>';
+  h+='<iframe title="Route" loading="lazy" src="https://maps.google.com/maps?saddr='+encodeURIComponent(ride.pc.lat+","+ride.pc.lng)+'&daddr='+encodeURIComponent(ride.dc.lat+","+ride.dc.lng)+'&output=embed"></iframe>';
+  h+='<button class="big" id="rq">'+t("req")+'</button>';
+  if(ride.note)h+='<p class="mute" role="status">'+ride.note+'</p>';
+  h+='<p class="mute">'+t("fnote")+'</p>';
+ }
+ return h}
+function render(){
+ document.documentElement.lang=lang;$("lg").value=lang;$("sb").textContent=R.sub;
+ var h="";
+ if(!phone){
+  h+='<h2>'+t("login")+'</h2>';
+  if(!pending)h+='<form id="lf"><input name="ph" type="tel" inputmode="numeric" maxlength="14" placeholder="'+t("mobile")+'" aria-label="'+t("mobile")+'" required>'+(API?'<select name="ch" aria-label="OTP"><option value="sms">SMS</option><option value="whatsapp">WhatsApp</option></select>':'')+'<button>'+(API||fbWant?t("sendotp"):t("login"))+'</button></form>';
+  else h+='<form id="of"><p>+91 '+pending+'</p><input name="o" inputmode="numeric" maxlength="6" placeholder="'+t("otp")+'" aria-label="'+t("otp")+'" required><button>'+t("verify")+'</button></form>'+(API||fbWant?'':'<p class="mute">'+t("demo")+' <b>'+otpCode+'</b></p>');
+  if(err)h+='<p class="low" role="alert">'+err+'</p>';
+ }else{
+  if(screen=="food"){$("v").innerHTML=foodView();return}
+  if(screen=="ride"){$("v").innerHTML=rideView();return}
+  h+='<h2>'+t("hello")+', +91 '+phone+'</h2>';
+  if(ROLE=="captain")h+='<button class="big" id="tg">'+(online?t("goff"):t("goon"))+'</button>';
+  h+='<div class="grid">'+R.tiles.map(function(x){return '<button class="tile" '+goAttr(x)+'>'+x+'</button>'}).join("")+'</div>';
+  if(note)h+='<p class="mute" role="status">'+note+'</p>';
+  h+='<br><button class="ghost" id="out">'+t("logout")+'</button>';
+ }
+ $("v").innerHTML=h}
+document.addEventListener("submit",function(e){
+ e.preventDefault();var f=e.target,v=f.elements;
+ if(f.id=="lf"){var ph=v.ph.value.replace(/\D/g,"").slice(-10);if(ph.length!=10){err=t("badph");render();return}err="";
+  if(fbWant){if(!fbOn){err=t("fbfail");render();return}
+  try{if(!verifier)verifier=new firebase.auth.RecaptchaVerifier("rcv",{size:"invisible"})}catch(x){}
+  auth.signInWithPhoneNumber("+91"+ph,verifier).then(function(c){confirmation=c;pending=ph;render()}).catch(function(){err=t("sendfail");try{verifier.clear()}catch(x){}verifier=null;render()});return}
+  if(!API){pending=ph;enter();render();return}
+  call("/send-otp",{phone:ph,channel:v.ch.value},function(r){if(r&&r.sent)pending=ph;else err=t("sendfail");render()});return}
+ if(f.id=="of"){var cd=v.o.value.trim();
+  if(fbWant){confirmation.confirm(cd).catch(function(){err=t("badotp");render()});return}
+  if(!API){if(cd==otpCode)enter();else err=t("badotp");render();return}
+  call("/verify-otp",{phone:pending,code:cd},function(r){if(r&&r.approved)enter();else err=t("badotp");render()})}
+});
+document.addEventListener("click",function(e){var t0=e.target;
+ if(t0.id=="out"){if(fbOn)auth.signOut();try{localStorage.removeItem(KEY+"_s")}catch(x){}phone="";pending=null;err="";note="";render()}
+ if(t0.id=="tg"){online=!online;render()}
+ var vc=t0.closest&&t0.closest("[data-veh]");if(vc){ride.sel=vc.dataset.veh;render();return}
+ var gv=t0.dataset&&t0.dataset.go;
+ if(gv=="food"){screen="food";if(PLACES_KEY&&!food.live)loadPlaces();render()}
+ else if(gv){screen="ride";ride.grp=gv;ride.sel=GRP[gv][0];ride.km=0;ride.msg="";ride.note="";render()}
+ if(t0.id=="rb"){screen="home";render()}
+ if(t0.id=="rq"&&fbOn){requestFB()}
+ if(t0.id=="rq"&&!fbOn){if(!RIDE_API){ride.note=t("noserver");render();return}
+  var vv=VEH.filter(function(x){return x.k==ride.sel})[0];
+  if(vv.mx&&ride.km>vv.mx){ride.note=t("toofar");render();return}
+  ride.fare=fareOf(vv);
+  rcall("POST","/rides",{phone:phone,veh:vv.n,pu:ride.pu,dr:ride.dr,pc:ride.pc,dc:ride.dc,km:+ride.km.toFixed(2),fare:ride.fare,city:ride.city},function(r){if(r&&r.id){ride.id=r.id;ride.st="requested";ride.cap="";ride.note="";poll();render()}else{ride.note=t("rfail");render()}})}
+ if(t0.id=="rcn"&&fbOn){fdb.collection("rides").doc(ride.id).update({status:"cancelled"})}
+ if(t0.id=="rcn"&&!fbOn){rcall("POST","/rides/"+ride.id+"/cancel",{phone:phone},function(r){if(r&&r.status){ride.st=r.status;render()}})}
+ if(t0.id=="rnw"){ride.id="";ride.st="";ride.km=0;ride.note="";render()}
+ if(t0.id=="rg"){ride.pu=$("ru").value.trim();ride.dr=$("rd").value.trim();if(ride.pu&&ride.dr)calc()}
+ if(t0.id=="rl"){ride.dr=$("rd").value.trim();if(!navigator.geolocation){ride.msg=t("locfail");render();return}
+  navigator.geolocation.getCurrentPosition(function(g){ride.pc={lat:g.coords.latitude,lng:g.coords.longitude};ride.usePos=true;ride.pu=t("live");ride.msg="";render()},function(){ride.msg=t("locfail");render()},{enableHighAccuracy:true,timeout:10000})}
+ if(t0.id=="fb"){screen="home";render()}
+ if(t0.id=="fm"){loadPlaces(true)}
+ if(t0.id=="fl"){if(!navigator.geolocation){food.msg=t("locfail");render();return}
+  navigator.geolocation.getCurrentPosition(function(g){food.pos={lat:g.coords.latitude,lng:g.coords.longitude};food.msg="";loadPlaces();render()},function(){food.msg=t("locfail");render()},{enableHighAccuracy:true,timeout:10000})}
+ if(t0.dataset&&t0.dataset.soon){note=t("soon");render()}
+});
+document.addEventListener("change",function(e){var q0=e.target.id;
+ if(q0=="rc"){ride.pu=$("ru").value.trim();ride.dr=$("rd").value.trim();ride.city=e.target.value;ride.km=0;ride.usePos=false;ride.msg="";render()}
+ if(q0=="fc"){food.city=e.target.value;food.pos=null;food.live=false;food.list=[];food.tok="";loadPlaces();render()}
+ if(q0=="fq"){food.q=e.target.value.trim();if(PLACES_KEY){food.live=false;loadPlaces()}render()}
+ if(e.target.id=="lg"){lang=e.target.value;try{localStorage.setItem("aisameer_lang",lang)}catch(x){}render()}});
+/* Firebase sign-in (phone OTP) */
+if(fbWant){phone="";try{firebase.initializeApp(FB);auth=firebase.auth();if(firebase.firestore)fdb=firebase.firestore();fbOn=true}catch(e){}}
+if(fbOn)auth.onAuthStateChanged(function(u){if(u&&u.phoneNumber){phone=u.phoneNumber.replace("+91","");uid=u.uid;pending=null;err=""}else{phone="";uid=""};render()});
+/* fallback: some preview apps block form submission; run the form handler ourselves */
+var subF=null;
+function arm(f){subF=f;setTimeout(function(){var g=subF;subF=null;if(g&&g.checkValidity())g.dispatchEvent(new Event("submit",{bubbles:true,cancelable:true}))},80)}
+document.addEventListener("submit",function(){subF=null},true);
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("button");if(b&&b.form&&b.type=="submit")arm(b.form)});
+document.addEventListener("keydown",function(e){if(e.key=="Enter"&&e.target.tagName=="INPUT"&&e.target.form)arm(e.target.form)});
+render();
+</script>
+</body>
+</html>
