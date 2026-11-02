@@ -77,7 +77,7 @@ try{lang=localStorage.getItem(KEY+"_l")||"te"}catch(e){}
 function L(){return T[lang]||T.en}
 function t(k){return L()[k]||T.en[k]}
 var API=""; /* paste your OTP server URL here, e.g. https://your-server.com */
-var FB={apiKey:"AIzaSyAYdOe2hwbiWyXB4xw1nw5MxHpxRJ90G-A",authDomain:"ai-sameer.firebaseapp.com",projectId:"ai-sameer",storageBucket:"ai-sameer.firebasestorage.app",messagingSenderId:"863476808664",appId:"1:863476808664:web:cdd86c3eefd9a4fd3850ad"};
+var FB={apiKey:"AIzaSyBGa0uizdlQwYV92L6_LSq0LkxJfAS02LU",authDomain:"ai-sameer-app.firebaseapp.com",projectId:"ai-sameer-app",storageBucket:"ai-sameer-app.firebasestorage.app",messagingSenderId:"149986585931",appId:"1:149986585931:web:d0ab6a905a9a38a75c8cce"};
 var fbWant=!!FB.apiKey,fbOn=false,auth=null,fdb=null,confirmation=null,verifier=null,uid="";
 var phone="",pending=null,otpCode="",err="",db=null;
 function blank(p){return {merchant:{name:"",phone:p,open:true},products:[],orders:[]}}
@@ -145,7 +145,7 @@ document.addEventListener("submit",function(e){
  e.preventDefault();var f=e.target,v=f.elements;
  if(f.id=="lf"){var ph=v.ph.value.replace(/\D/g,"").slice(-10);if(ph.length!=10){err=t("badph");render();return}err="";if(fbWant){if(!fbOn){err=t("fbfail");render();return}
   try{if(!verifier)verifier=new firebase.auth.RecaptchaVerifier("rcv",{size:"invisible"})}catch(x){}
-  auth.signInWithPhoneNumber("+91"+ph,verifier).then(function(c){confirmation=c;pending=ph;render()}).catch(function(){err=t("sendfail");try{verifier.clear()}catch(x){}verifier=null;render()});return}
+  auth.signInWithPhoneNumber("+91"+ph,verifier).then(function(c){confirmation=c;pending=ph;render()}).catch(function(e){err=t("sendfail")+" ["+(e&&e.code?e.code:"error")+"]";try{verifier.clear()}catch(x){}verifier=null;render()});return}
   if(!API){pending=ph;enter();render();return}
   call("/send-otp",{phone:ph,channel:v.ch.value},function(r){if(r&&r.sent){pending=ph}else{err=t("sendfail")}render()});return}
  if(f.id=="of"){var cd=v.o.value.trim();
