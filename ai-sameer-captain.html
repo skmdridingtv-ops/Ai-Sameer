@@ -47,7 +47,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 var ROLE="captain";          /* customer or captain */
 var API="";                   /* paste your OTP server URL here, e.g. https://your-server.com */
 var RIDE_API="";              /* paste your ride server URL here (can be the same server as above) */
-var FB={apiKey:"AIzaSyAYdOe2hwbiWyXB4xw1nw5MxHpxRJ90G-A",authDomain:"ai-sameer.firebaseapp.com",projectId:"ai-sameer",storageBucket:"ai-sameer.firebasestorage.app",messagingSenderId:"863476808664",appId:"1:863476808664:web:cdd86c3eefd9a4fd3850ad"};
+var FB={apiKey:"AIzaSyBGa0uizdlQwYV92L6_LSq0LkxJfAS02LU",authDomain:"ai-sameer-app.firebaseapp.com",projectId:"ai-sameer-app",storageBucket:"ai-sameer-app.firebasestorage.app",messagingSenderId:"149986585931",appId:"1:149986585931:web:d0ab6a905a9a38a75c8cce"};
 var fbWant=!!FB.apiKey,fbOn=false,auth=null,fdb=null,confirmation=null,verifier=null,uid="";
 var R={customer:{sub:"Customer App",ic:"\uD83D\uDECD\uFE0F",tiles:["\uD83C\uDFCD\uFE0F Bike","\uD83D\uDE97 Rides","\uD83D\uDCE6 Parcel","\uD83C\uDF7D\uFE0F Food","\uD83D\uDEFA Auto"]},
 captain:{sub:"Delivery Captain",ic:"\uD83D\uDEF5",tiles:["\uD83D\uDEF5 Trips","\uD83D\uDCCD Location","\uD83D\uDCE6 Parcels","\uD83D\uDEE1\uFE0F Safety"]}}[ROLE];
@@ -104,7 +104,7 @@ document.addEventListener("submit",function(e){
  if(f.id=="lf"){var ph=v.ph.value.replace(/\D/g,"").slice(-10);if(ph.length!=10){err=t("badph");render();return}err="";
   if(fbWant){if(!fbOn){err=t("fbfail");render();return}
   try{if(!verifier)verifier=new firebase.auth.RecaptchaVerifier("rcv",{size:"invisible"})}catch(x){}
-  auth.signInWithPhoneNumber("+91"+ph,verifier).then(function(c){confirmation=c;pending=ph;render()}).catch(function(){err=t("sendfail");try{verifier.clear()}catch(x){}verifier=null;render()});return}
+  auth.signInWithPhoneNumber("+91"+ph,verifier).then(function(c){confirmation=c;pending=ph;render()}).catch(function(e){err=t("sendfail")+" ["+(e&&e.code?e.code:"error")+"]";try{verifier.clear()}catch(x){}verifier=null;render()});return}
   if(!API){pending=ph;enter();render();return}
   call("/send-otp",{phone:ph,channel:v.ch.value},function(r){if(r&&r.sent)pending=ph;else err=t("sendfail");render()});return}
  if(f.id=="of"){var cd=v.o.value.trim();
