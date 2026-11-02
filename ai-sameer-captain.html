@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI Sameer</title>
+<style>
+:root{--bg:#0a1a3a;--panel:#12285a;--line:#2b4a8f;--text:#eef3ff;--mute:#a9bbe0;--gold:#f2c14e;--bad:#ff8b8b;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;line-height:1.45;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+header{padding:16px;border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:12px;border:2px solid var(--gold);display:grid;place-items:center;font-size:24px;background:var(--panel)}
+h1{font-size:19px;margin:0;color:var(--gold)}
+small,.mute{color:var(--mute)}
+main{padding:16px;max-width:560px;margin:auto}
+h2{font-size:17px;margin:4px 0 12px}
+form{display:grid;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}
+input,select,button{font:inherit;color:var(--text)}
+input,select{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;width:100%}
+button{background:var(--gold);color:#1a1405;border:0;border-radius:8px;padding:11px 14px;font-weight:700;cursor:pointer}
+button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #6bb6ff;outline-offset:2px}
+#lg{margin-left:auto;width:auto;max-width:42%}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+.tile{background:var(--panel);color:var(--text);border:1px solid var(--line);padding:18px 8px;font-size:16px}
+.big{width:100%;padding:14px;font-size:16px}
+.low{color:var(--bad)}
+.card{display:flex;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px}
+.card h3{margin:0 0 2px;font-size:15px}.card p{margin:0 0 4px;font-size:13px;color:var(--mute)}.card a{color:var(--gold);font-size:13px}
+.logo{overflow:hidden;padding:0}
+.logo img{width:100%;height:100%;object-fit:cover;display:block}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<link rel="manifest" href="manifest-captain.json">
+<meta name="theme-color" content="#0a1a3a">
+<link rel="icon" href="icon-captain.png">
+<link rel="apple-touch-icon" href="icon-captain.png">
+</head>
+<body>
+<div id="rcv"></div>
+<header><div class="logo" id="lo"><img alt="AI Sameer" src="data:image/webp;base64,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"></div><div><h1>AI Sameer</h1><small id="sb"></small></div>
+<select id="lg" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option><option value="kn">ಕನ್ನಡ</option><option value="te">తెలుగు</option></select></header>
+<main id="v"></main>
+<script>
+var ROLE="captain";          /* customer or captain */
+var API="";                   /* paste your OTP server URL here, e.g. https://your-server.com */
+var RIDE_API="";              /* paste your ride server URL here (can be the same server as above) */
+var FB={apiKey:"AIzaSyAYdOe2hwbiWyXB4xw1nw5MxHpxRJ90G-A",authDomain:"ai-sameer.firebaseapp.com",projectId:"ai-sameer",storageBucket:"ai-sameer.firebasestorage.app",messagingSenderId:"863476808664",appId:"1:863476808664:web:cdd86c3eefd9a4fd3850ad"};
+var fbWant=!!FB.apiKey,fbOn=false,auth=null,fdb=null,confirmation=null,verifier=null,uid="";
+var R={customer:{sub:"Customer App",ic:"\uD83D\uDECD\uFE0F",tiles:["\uD83C\uDFCD\uFE0F Bike","\uD83D\uDE97 Rides","\uD83D\uDCE6 Parcel","\uD83C\uDF7D\uFE0F Food","\uD83D\uDEFA Auto"]},
+captain:{sub:"Delivery Captain",ic:"\uD83D\uDEF5",tiles:["\uD83D\uDEF5 Trips","\uD83D\uDCCD Location","\uD83D\uDCE6 Parcels","\uD83D\uDEE1\uFE0F Safety"]}}[ROLE];
+var T={
+en:{fbfail:"Firebase could not load. Check your internet connection and reload.",noserver:"Ride server not connected. Set RIDE_API in the file.",rfail:"Could not reach the ride server. Try again.",finding:"Looking for a captain…",accd:"Captain accepted",done:"Ride completed",canc:"Ride cancelled",cancel:"Cancel ride",newride:"Book another ride",fare:"Fare",jobs:"Ride requests",norq:"No ride requests right now.",accept:"Accept",complete:"Complete ride",goonfirst:"Go online to see ride requests.",map:"Open in Google Maps",login:"Login",mobile:"Mobile number",sendotp:"Send OTP",otp:"Enter 6-digit OTP",verify:"Verify and log in",badph:"Enter a valid 10-digit mobile number.",badotp:"Wrong OTP. Try again.",demo:"Demo mode: no SMS service is connected, so your OTP is:",sendfail:"Could not send OTP. Check the number and try again.",logout:"Log out",hello:"Welcome",soon:"Coming soon",goon:"Go online",goff:"Online — tap to go offline"},
+hi:{fbfail:"Firebase लोड नहीं हो सका। इंटरनेट जांचें और पेज फिर खोलें।",noserver:"राइड सर्वर जुड़ा नहीं है। फ़ाइल में RIDE_API डालें।",rfail:"राइड सर्वर तक नहीं पहुंच सके। फिर कोशिश करें।",finding:"कैप्टन ढूंढ रहे हैं…",accd:"कैप्टन ने स्वीकार किया",done:"राइड पूरी हुई",canc:"राइड रद्द हुई",cancel:"राइड रद्द करें",newride:"एक और राइड बुक करें",fare:"किराया",jobs:"राइड अनुरोध",norq:"अभी कोई राइड अनुरोध नहीं।",accept:"स्वीकार करें",complete:"राइड पूरी करें",goonfirst:"राइड अनुरोध देखने के लिए ऑनलाइन जाएं।",map:"Google Maps में खोलें",login:"लॉगिन",mobile:"मोबाइल नंबर",sendotp:"OTP भेजें",otp:"6 अंकों का OTP डालें",verify:"सत्यापित करें और लॉगिन करें",badph:"सही 10 अंकों का मोबाइल नंबर डालें।",badotp:"गलत OTP। फिर कोशिश करें।",demo:"डेमो मोड: SMS सेवा जुड़ी नहीं है, इसलिए आपका OTP है:",sendfail:"OTP नहीं भेजा जा सका। नंबर जांचें और फिर कोशिश करें।",logout:"लॉग आउट",hello:"स्वागत है",soon:"जल्द आ रहा है",goon:"ऑनलाइन जाएं",goff:"ऑनलाइन — ऑफलाइन जाने के लिए दबाएं"},
+mr:{fbfail:"Firebase लोड झाले नाही. इंटरनेट तपासा आणि पेज पुन्हा उघडा.",noserver:"राइड सर्व्हर जोडलेला नाही. फाइलमध्ये RIDE_API टाका.",rfail:"राइड सर्व्हरशी संपर्क झाला नाही. पुन्हा प्रयत्न करा.",finding:"कॅप्टन शोधत आहोत…",accd:"कॅप्टनने स्वीकारले",done:"राइड पूर्ण झाली",canc:"राइड रद्द झाली",cancel:"राइड रद्द करा",newride:"आणखी एक राइड बुक करा",fare:"भाडे",jobs:"राइड विनंत्या",norq:"सध्या कोणत्याही राइड विनंत्या नाहीत.",accept:"स्वीकारा",complete:"राइड पूर्ण करा",goonfirst:"राइड विनंत्या पाहण्यासाठी ऑनलाइन व्हा.",map:"Google Maps मध्ये उघडा",login:"लॉगिन",mobile:"मोबाइल नंबर",sendotp:"OTP पाठवा",otp:"6 अंकी OTP टाका",verify:"पडताळा आणि लॉगिन करा",badph:"योग्य 10 अंकी मोबाइल नंबर टाका.",badotp:"चुकीचा OTP. पुन्हा प्रयत्न करा.",demo:"डेमो मोड: SMS सेवा जोडलेली नाही, म्हणून तुमचा OTP:",sendfail:"OTP पाठवता आला नाही. नंबर तपासा आणि पुन्हा प्रयत्न करा.",logout:"लॉग आउट",hello:"स्वागत",soon:"लवकरच येत आहे",goon:"ऑनलाइन व्हा",goff:"ऑनलाइन — ऑफलाइन होण्यासाठी दाबा"},
+kn:{fbfail:"Firebase ಲೋಡ್ ಆಗಲಿಲ್ಲ. ಇಂಟರ್ನೆಟ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ತೆರೆಯಿರಿ.",noserver:"ರೈಡ್ ಸರ್ವರ್ ಜೋಡಿಸಿಲ್ಲ. ಫೈಲ್‌ನಲ್ಲಿ RIDE_API ಹಾಕಿ.",rfail:"ರೈಡ್ ಸರ್ವರ್ ತಲುಪಲಾಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",finding:"ಕ್ಯಾಪ್ಟನ್ ಹುಡುಕುತ್ತಿದ್ದೇವೆ…",accd:"ಕ್ಯಾಪ್ಟನ್ ಒಪ್ಪಿಕೊಂಡರು",done:"ರೈಡ್ ಪೂರ್ಣಗೊಂಡಿದೆ",canc:"ರೈಡ್ ರದ್ದಾಗಿದೆ",cancel:"ರೈಡ್ ರದ್ದುಮಾಡಿ",newride:"ಇನ್ನೊಂದು ರೈಡ್ ಬುಕ್ ಮಾಡಿ",fare:"ದರ",jobs:"ರೈಡ್ ವಿನಂತಿಗಳು",norq:"ಈಗ ಯಾವುದೇ ರೈಡ್ ವಿನಂತಿಗಳಿಲ್ಲ.",accept:"ಒಪ್ಪಿಕೊಳ್ಳಿ",complete:"ರೈಡ್ ಪೂರ್ಣಗೊಳಿಸಿ",goonfirst:"ರೈಡ್ ವಿನಂತಿಗಳನ್ನು ನೋಡಲು ಆನ್‌ಲೈನ್ ಆಗಿ.",map:"Google Maps ನಲ್ಲಿ ತೆರೆಯಿರಿ",login:"ಲಾಗಿನ್",mobile:"ಮೊಬೈಲ್ ಸಂಖ್ಯೆ",sendotp:"OTP ಕಳುಹಿಸಿ",otp:"6 ಅಂಕಿಯ OTP ನಮೂದಿಸಿ",verify:"ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಲಾಗಿನ್ ಮಾಡಿ",badph:"ಸರಿಯಾದ 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ.",badotp:"ತಪ್ಪಾದ OTP. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",demo:"ಡೆಮೊ ಮೋಡ್: SMS ಸೇವೆ ಜೋಡಿಸಿಲ್ಲ, ಆದ್ದರಿಂದ ನಿಮ್ಮ OTP:",sendfail:"OTP ಕಳುಹಿಸಲಾಗಲಿಲ್ಲ. ಸಂಖ್ಯೆ ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",logout:"ಲಾಗ್ ಔಟ್",hello:"ಸ್ವಾಗತ",soon:"ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ",goon:"ಆನ್‌ಲೈನ್ ಆಗಿ",goff:"ಆನ್‌ಲೈನ್ — ಆಫ್‌ಲೈನ್ ಆಗಲು ಒತ್ತಿ"},
+te:{fbfail:"Firebase లోడ్ కాలేదు. ఇంటర్నెట్ చూసి పేజీ మళ్లీ తెరవండి.",noserver:"రైడ్ సర్వర్ కనెక్ట్ కాలేదు. ఫైల్‌లో RIDE_API పెట్టండి.",rfail:"రైడ్ సర్వర్‌ని చేరలేకపోయాము. మళ్లీ ప్రయత్నించండి.",finding:"కెప్టెన్ కోసం వెతుకుతున్నాం…",accd:"కెప్టెన్ అంగీకరించారు",done:"రైడ్ పూర్తయింది",canc:"రైడ్ రద్దు అయింది",cancel:"రైడ్ రద్దు చేయండి",newride:"మరో రైడ్ బుక్ చేయండి",fare:"ఛార్జీ",jobs:"రైడ్ అభ్యర్థనలు",norq:"ఇప్పుడు రైడ్ అభ్యర్థనలు లేవు.",accept:"అంగీకరించు",complete:"రైడ్ పూర్తి చేయి",goonfirst:"రైడ్ అభ్యర్థనలు చూడటానికి ఆన్‌లైన్‌కి వెళ్లండి.",map:"Google Mapsలో తెరవండి",login:"లాగిన్",mobile:"మొబైల్ నంబర్",sendotp:"OTP పంపండి",otp:"6 అంకెల OTP ఇవ్వండి",verify:"ధృవీకరించి లాగిన్ అవ్వండి",badph:"సరైన 10 అంకెల మొబైల్ నంబర్ ఇవ్వండి.",badotp:"OTP తప్పు. మళ్లీ ప్రయత్నించండి.",demo:"డెమో మోడ్: SMS సేవ కనెక్ట్ కాలేదు, అందుకే మీ OTP:",sendfail:"OTP పంపలేకపోయాము. నంబర్ చూసి మళ్లీ ప్రయత్నించండి.",logout:"లాగ్ అవుట్",hello:"స్వాగతం",soon:"త్వరలో వస్తుంది",goon:"ఆన్‌లైన్‌కి వెళ్లండి",goff:"ఆన్‌లైన్‌లో ఉన్నారు — ఆఫ్‌లైన్‌కి నొక్కండి"}};
+var KEY="aisameer_"+ROLE,$=function(i){return document.getElementById(i)};
+var lang="te",phone="",pending=null,otpCode="",err="",note="",online=false;
+try{lang=localStorage.getItem("aisameer_lang")||"te";phone=localStorage.getItem(KEY+"_s")||""}catch(e){}
+function t(k){return(T[lang]||T.en)[k]||T.en[k]}
+function call(p,b,cb){fetch(API+p,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).then(function(r){return r.json()}).then(cb).catch(function(){cb(null)})}
+function enter(){phone=pending;pending=null;err="";try{localStorage.setItem(KEY+"_s",phone)}catch(e){}}
+function rcall(m,p,b,cb){fetch(RIDE_API+p,{method:m,headers:{"Content-Type":"application/json"},body:b?JSON.stringify(b):undefined}).then(function(r){return r.json()}).then(cb).catch(function(){cb(null)})}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var jobs=[],mine=null,ctimer=null;
+var u1=null,u2=null;
+function cwatch(){if(u1)u1();if(u2)u2();u1=u2=null;if(!online||!fbOn)return;
+ u1=fdb.collection("rides").where("status","==","requested").onSnapshot(function(q){var n=Date.now();jobs=q.docs.map(function(d){var r=d.data();r.id=d.id;return r}).filter(function(r){return n-(r.createdMs||0)<1800000});render()});
+ u2=fdb.collection("rides").where("captainUid","==",uid).where("status","==","accepted").onSnapshot(function(q){mine=null;q.forEach(function(d){var r=d.data();r.id=d.id;mine=r});render()})}
+function acceptFB(id){var ref=fdb.collection("rides").doc(id);fdb.runTransaction(function(tx){return tx.get(ref).then(function(d){if(!d.exists||d.data().status!="requested")throw new Error("taken");tx.update(ref,{status:"accepted",captain:phone,captainUid:uid})})}).catch(function(){})}
+function cpoll(){if(fbOn){cwatch();return}clearInterval(ctimer);if(!online||!RIDE_API)return;
+ var go=function(){rcall("GET","/rides?status=requested",null,function(r){jobs=Array.isArray(r)?r:[];rcall("GET","/rides?status=accepted&captain="+phone,null,function(m){mine=Array.isArray(m)&&m[0]?m[0]:null;render()})})};
+ go();ctimer=setInterval(go,4000)}
+function jobsView(){
+ if(!RIDE_API&&!fbOn)return '<p class="mute">'+t("noserver")+'</p>';
+ if(!online)return '<p class="mute">'+t("goonfirst")+'</p>';
+ var h='<h2>'+t("jobs")+'</h2>';
+ if(mine){var m=mine;return h+'<div class="card"><div><h3>'+esc(m.veh)+' \u00B7 \u20B9'+esc(m.fare)+'</h3><p>'+esc(m.pu)+' \u2192 '+esc(m.dr)+'</p><p>+91 '+esc(m.phone)+' \u00B7 '+esc(m.km)+' km</p><a href="https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(m.pc.lat+","+m.pc.lng)+'&destination='+encodeURIComponent(m.dc.lat+","+m.dc.lng)+'" target="_blank" rel="noopener">'+t("map")+'</a><br><br><button data-done="'+esc(m.id)+'">'+t("complete")+'</button></div></div>'}
+ if(!jobs.length)return h+'<p class="mute">'+t("norq")+'</p>';
+ jobs.forEach(function(j){h+='<div class="card"><div><h3>'+esc(j.veh)+' \u00B7 \u20B9'+esc(j.fare)+'</h3><p>'+esc(j.pu)+' \u2192 '+esc(j.dr)+'</p><p>'+esc(j.km)+' km</p><button data-acc="'+esc(j.id)+'">'+t("accept")+'</button></div></div>'});
+ return h}
+function render(){
+ document.documentElement.lang=lang;$("lg").value=lang;$("sb").textContent=R.sub;
+ var h="";
+ if(!phone){
+  h+='<h2>'+t("login")+'</h2>';
+  if(!pending)h+='<form id="lf"><input name="ph" type="tel" inputmode="numeric" maxlength="14" placeholder="'+t("mobile")+'" aria-label="'+t("mobile")+'" required>'+(API?'<select name="ch" aria-label="OTP"><option value="sms">SMS</option><option value="whatsapp">WhatsApp</option></select>':'')+'<button>'+(API||fbWant?t("sendotp"):t("login"))+'</button></form>';
+  else h+='<form id="of"><p>+91 '+pending+'</p><input name="o" inputmode="numeric" maxlength="6" placeholder="'+t("otp")+'" aria-label="'+t("otp")+'" required><button>'+t("verify")+'</button></form>'+(API||fbWant?'':'<p class="mute">'+t("demo")+' <b>'+otpCode+'</b></p>');
+  if(err)h+='<p class="low" role="alert">'+err+'</p>';
+ }else{
+  h+='<h2>'+t("hello")+', +91 '+phone+'</h2>';
+  if(ROLE=="captain")h+='<button class="big" id="tg">'+(online?t("goff"):t("goon"))+'</button>';
+  if(ROLE=="captain")h+=jobsView();
+  h+='<div class="grid">'+R.tiles.map(function(x){return '<button class="tile" data-soon="1">'+x+'</button>'}).join("")+'</div>';
+  if(note)h+='<p class="mute" role="status">'+note+'</p>';
+  h+='<br><button class="ghost" id="out">'+t("logout")+'</button>';
+ }
+ $("v").innerHTML=h}
+document.addEventListener("submit",function(e){
+ e.preventDefault();var f=e.target,v=f.elements;
+ if(f.id=="lf"){var ph=v.ph.value.replace(/\D/g,"").slice(-10);if(ph.length!=10){err=t("badph");render();return}err="";
+  if(fbWant){if(!fbOn){err=t("fbfail");render();return}
+  try{if(!verifier)verifier=new firebase.auth.RecaptchaVerifier("rcv",{size:"invisible"})}catch(x){}
+  auth.signInWithPhoneNumber("+91"+ph,verifier).then(function(c){confirmation=c;pending=ph;render()}).catch(function(){err=t("sendfail");try{verifier.clear()}catch(x){}verifier=null;render()});return}
+  if(!API){pending=ph;enter();render();return}
+  call("/send-otp",{phone:ph,channel:v.ch.value},function(r){if(r&&r.sent)pending=ph;else err=t("sendfail");render()});return}
+ if(f.id=="of"){var cd=v.o.value.trim();
+  if(fbWant){confirmation.confirm(cd).catch(function(){err=t("badotp");render()});return}
+  if(!API){if(cd==otpCode)enter();else err=t("badotp");render();return}
+  call("/verify-otp",{phone:pending,code:cd},function(r){if(r&&r.approved)enter();else err=t("badotp");render()})}
+});
+document.addEventListener("click",function(e){var t0=e.target;
+ if(t0.id=="out"){online=false;clearInterval(ctimer);if(fbOn){cwatch();auth.signOut()}try{localStorage.removeItem(KEY+"_s")}catch(x){}phone="";pending=null;err="";note="";render()}
+ if(t0.id=="tg"){online=!online;if(!online){jobs=[];mine=null}cpoll();render()}
+ if(t0.dataset&&t0.dataset.acc&&fbOn){acceptFB(t0.dataset.acc)}
+ if(t0.dataset&&t0.dataset.acc&&!fbOn){rcall("POST","/rides/"+t0.dataset.acc+"/accept",{phone:phone},function(){cpoll()})}
+ if(t0.dataset&&t0.dataset.done&&fbOn){fdb.collection("rides").doc(t0.dataset.done).update({status:"completed"})}
+ if(t0.dataset&&t0.dataset.done&&!fbOn){rcall("POST","/rides/"+t0.dataset.done+"/complete",{phone:phone},function(){cpoll()})}
+ if(t0.dataset&&t0.dataset.soon){note=t("soon");render()}
+});
+document.addEventListener("change",function(e){if(e.target.id=="lg"){lang=e.target.value;try{localStorage.setItem("aisameer_lang",lang)}catch(x){}render()}});
+/* Firebase sign-in (phone OTP) */
+if(fbWant){phone="";try{firebase.initializeApp(FB);auth=firebase.auth();if(firebase.firestore)fdb=firebase.firestore();fbOn=true}catch(e){}}
+if(fbOn)auth.onAuthStateChanged(function(u){if(u&&u.phoneNumber){phone=u.phoneNumber.replace("+91","");uid=u.uid;pending=null;err=""}else{phone="";uid=""};render()});
+/* fallback: some preview apps block form submission; run the form handler ourselves */
+var subF=null;
+function arm(f){subF=f;setTimeout(function(){var g=subF;subF=null;if(g&&g.checkValidity())g.dispatchEvent(new Event("submit",{bubbles:true,cancelable:true}))},80)}
+document.addEventListener("submit",function(){subF=null},true);
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("button");if(b&&b.form&&b.type=="submit")arm(b.form)});
+document.addEventListener("keydown",function(e){if(e.key=="Enter"&&e.target.tagName=="INPUT"&&e.target.form)arm(e.target.form)});
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(function(){});
+render();
+</script>
+</body>
+</html>
