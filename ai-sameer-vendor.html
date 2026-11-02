@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI Sameer Vendor</title>
+<style>
+:root{--bg:#0b1f26;--panel:#12303a;--line:#2a5560;--text:#eef4f4;--mute:#9db8bc;--gold:#d9b25a;--blue:#4aa8ff;--ok:#5fd39a;--warn:#f0a35e;--bad:#ef6b6b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef3f3;--panel:#fff;--line:#c9d9db;--text:#10272d;--mute:#4f6b70;--gold:#8a6a1c;--blue:#1f6fc4;--ok:#1d8a5a;--warn:#b86a17;--bad:#c23b3b}}
+:root[data-theme="dark"]{color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;line-height:1.45;padding-bottom:76px}
+header{padding:16px;border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:50%;border:2px solid var(--gold);display:grid;place-items:center;font-size:22px;background:var(--panel)}
+h1{font-size:19px;margin:0;color:var(--gold);letter-spacing:.3px}
+header small{color:var(--mute)}
+main{padding:16px;max-width:760px;margin:auto}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+.stat b{display:block;font-size:22px}
+.stat span{color:var(--mute);font-size:13px}
+.bars{display:flex;align-items:flex-end;gap:8px;height:110px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:16px}
+.bars div{flex:1;background:var(--blue);border-radius:4px 4px 0 0;position:relative;min-height:4px}
+.bars div i{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:11px;color:var(--mute);font-style:normal}
+.row{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.row h3{margin:0;font-size:15px}
+.row p{margin:2px 0 0;color:var(--mute);font-size:13px}
+.tag{font-size:12px;padding:3px 9px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+.New{color:var(--blue)}.Packed{color:var(--warn)}.Delivered{color:var(--ok)}.Cancelled{color:var(--bad)}
+button,input,select{font:inherit;color:var(--text)}
+button{background:var(--gold);color:#1a1405;border:0;border-radius:8px;padding:9px 14px;font-weight:700;cursor:pointer}
+button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+form{display:grid;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:14px}
+input,select{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;width:100%}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.low{color:var(--bad)}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--panel);border-top:2px solid var(--gold);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;background:transparent;color:var(--mute);border-radius:8px;font-size:13px;padding:8px 2px}
+nav button[aria-current="page"]{color:var(--gold);background:var(--bg)}
+h2{font-size:17px;margin:4px 0 12px}
+#lg{margin-left:auto;width:auto;max-width:42%}
+.th{width:56px;height:56px;object-fit:cover;border-radius:8px;flex:none}
+.gal{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
+.gi{position:relative}
+.gi img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;display:block}
+.gi button{position:absolute;top:6px;right:6px;padding:4px 9px;background:var(--bg)}
+.lb{color:var(--mute);font-size:13px}
+.empty{color:var(--mute);text-align:center;padding:24px}
+.logo{overflow:hidden;padding:0}
+.logo img{width:100%;height:100%;object-fit:cover;display:block}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<link rel="manifest" href="manifest-vendor.json">
+<meta name="theme-color" content="#0b1f26">
+<link rel="icon" href="icon-vendor.png">
+<link rel="apple-touch-icon" href="icon-vendor.png">
+</head>
+<body>
+<div id="rcv"></div>
+<header><div class="logo"><img alt="" src="data:image/webp;base64,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"></div><div><h1>AI Sameer Vendor</h1><small id="tag"></small></div><select id="lg" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option><option value="kn">ಕನ್ನಡ</option><option value="te">తెలుగు</option></select></header>
+<main id="view"></main>
+<nav id="nav"></nav>
+<script>
+var KEY="sameer_vendor_v1",tab="dash";
+var T={
+en:{fbfail:"Firebase could not load. Check your internet connection and reload.",sendfail:"Could not send OTP. Check the number and try again.",photo:"Item photo (optional)",shopph:"Shop photos",addph:"Add shop photos",full:"Storage is full. Delete some photos and try again.",login:"Vendor login",mobile:"Mobile number",sendotp:"Send OTP",otp:"Enter 6-digit OTP",verify:"Verify and log in",badph:"Enter a valid 10-digit mobile number.",badotp:"Wrong OTP. Try again.",demo:"Demo mode: no SMS service is connected, so your OTP is:",logout:"Log out",cust:"Customer name",items:"Items",total:"Total ₹",addo:"Add order",dash:"Dashboard",orders:"Orders",products:"Products",merchant:"Merchant",tagline:"Merchant · Order · Product",rev:"Delivered revenue",newo:"New orders",low:"Low stock",week:"Weekly orders chart",noord:"No orders yet. New orders show up here.",New:"New",Packed:"Packed",Delivered:"Delivered",mark:"Mark as",pname:"Product name",price:"Price ₹",stock:"Stock",add:"Add product",noprod:"No products. Add your first one above.",instock:"in stock",plus5:"Add 5 stock",del:"Delete product",shop:"Shop name",phone:"Phone",open:"Open for orders",closed:"Closed",save:"Save changes",reset:"Reset demo data",days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]},
+te:{fbfail:"Firebase లోడ్ కాలేదు. ఇంటర్నెట్ చూసి పేజీ మళ్లీ తెరవండి.",sendfail:"OTP పంపలేకపోయాము. నంబర్ చూసి మళ్లీ ప్రయత్నించండి.",photo:"ఐటమ్ ఫోటో (ఐచ్ఛికం)",shopph:"షాప్ ఫోటోలు",addph:"షాప్ ఫోటోలు జోడించండి",full:"స్టోరేజ్ నిండింది. కొన్ని ఫోటోలు తొలగించి మళ్లీ ప్రయత్నించండి.",login:"వెండర్ లాగిన్",mobile:"మొబైల్ నంబర్",sendotp:"OTP పంపండి",otp:"6 అంకెల OTP ఇవ్వండి",verify:"ధృవీకరించి లాగిన్ అవ్వండి",badph:"సరైన 10 అంకెల మొబైల్ నంబర్ ఇవ్వండి.",badotp:"OTP తప్పు. మళ్లీ ప్రయత్నించండి.",demo:"డెమో మోడ్: SMS సేవ కనెక్ట్ కాలేదు, అందుకే మీ OTP:",logout:"లాగ్ అవుట్",cust:"కస్టమర్ పేరు",items:"వస్తువులు",total:"మొత్తం ₹",addo:"ఆర్డర్ జోడించు",dash:"డాష్‌బోర్డ్",orders:"ఆర్డర్లు",products:"ప్రొడక్ట్స్",merchant:"వ్యాపారి",tagline:"వ్యాపారి · ఆర్డర్ · ప్రొడక్ట్",rev:"డెలివరీ ఆదాయం",newo:"కొత్త ఆర్డర్లు",low:"తక్కువ స్టాక్",week:"వారపు ఆర్డర్ల చార్ట్",noord:"ఇంకా ఆర్డర్లు లేవు. కొత్త ఆర్డర్లు ఇక్కడ కనిపిస్తాయి.",New:"కొత్త",Packed:"ప్యాక్ అయింది",Delivered:"డెలివరీ అయింది",mark:"మార్చు:",pname:"ప్రొడక్ట్ పేరు",price:"ధర ₹",stock:"స్టాక్",add:"ప్రొడక్ట్ జోడించు",noprod:"ప్రొడక్ట్స్ లేవు. పైన మొదటిది జోడించండి.",instock:"స్టాక్‌లో ఉంది",plus5:"5 స్టాక్ జోడించు",del:"ప్రొడక్ట్ తొలగించు",shop:"షాప్ పేరు",phone:"ఫోన్",open:"ఆర్డర్లకు తెరిచి ఉంది",closed:"మూసివేశారు",save:"మార్పులు సేవ్ చేయి",reset:"డెమో డేటా రీసెట్ చేయి",days:["సోమ","మంగళ","బుధ","గురు","శుక్ర","శని","ఆది"]},
+hi:{fbfail:"Firebase लोड नहीं हो सका। इंटरनेट जांचें और पेज फिर खोलें।",sendfail:"OTP नहीं भेजा जा सका। नंबर जांचें और फिर कोशिश करें।",photo:"आइटम की फोटो (वैकल्पिक)",shopph:"दुकान की फोटो",addph:"दुकान की फोटो जोड़ें",full:"स्टोरेज भर गया है। कुछ फोटो हटाकर फिर कोशिश करें।",login:"विक्रेता लॉगिन",mobile:"मोबाइल नंबर",sendotp:"OTP भेजें",otp:"6 अंकों का OTP डालें",verify:"सत्यापित करें और लॉगिन करें",badph:"सही 10 अंकों का मोबाइल नंबर डालें।",badotp:"गलत OTP। फिर कोशिश करें।",demo:"डेमो मोड: SMS सेवा जुड़ी नहीं है, इसलिए आपका OTP है:",logout:"लॉग आउट",cust:"ग्राहक का नाम",items:"सामान",total:"कुल ₹",addo:"ऑर्डर जोड़ें",dash:"डैशबोर्ड",orders:"ऑर्डर",products:"प्रोडक्ट",merchant:"व्यापारी",tagline:"व्यापारी · ऑर्डर · प्रोडक्ट",rev:"डिलीवर्ड आय",newo:"नए ऑर्डर",low:"कम स्टॉक",week:"साप्ताहिक ऑर्डर चार्ट",noord:"अभी कोई ऑर्डर नहीं। नए ऑर्डर यहाँ दिखेंगे।",New:"नया",Packed:"पैक हुआ",Delivered:"डिलीवर हुआ",mark:"बदलें:",pname:"प्रोडक्ट का नाम",price:"कीमत ₹",stock:"स्टॉक",add:"प्रोडक्ट जोड़ें",noprod:"कोई प्रोडक्ट नहीं। ऊपर पहला जोड़ें।",instock:"स्टॉक में",plus5:"5 स्टॉक जोड़ें",del:"प्रोडक्ट हटाएं",shop:"दुकान का नाम",phone:"फ़ोन",open:"ऑर्डर के लिए खुला",closed:"बंद",save:"बदलाव सहेजें",reset:"डेमो डेटा रीसेट करें",days:["सोम","मंगल","बुध","गुरु","शुक्र","शनि","रवि"]},
+mr:{fbfail:"Firebase लोड झाले नाही. इंटरनेट तपासा आणि पेज पुन्हा उघडा.",sendfail:"OTP पाठवता आला नाही. नंबर तपासा आणि पुन्हा प्रयत्न करा.",photo:"वस्तूचा फोटो (ऐच्छिक)",shopph:"दुकानाचे फोटो",addph:"दुकानाचे फोटो जोडा",full:"स्टोरेज भरले आहे. काही फोटो काढून पुन्हा प्रयत्न करा.",login:"विक्रेता लॉगिन",mobile:"मोबाइल नंबर",sendotp:"OTP पाठवा",otp:"6 अंकी OTP टाका",verify:"पडताळा आणि लॉगिन करा",badph:"योग्य 10 अंकी मोबाइल नंबर टाका.",badotp:"चुकीचा OTP. पुन्हा प्रयत्न करा.",demo:"डेमो मोड: SMS सेवा जोडलेली नाही, म्हणून तुमचा OTP:",logout:"लॉग आउट",cust:"ग्राहकाचे नाव",items:"वस्तू",total:"एकूण ₹",addo:"ऑर्डर जोडा",dash:"डॅशबोर्ड",orders:"ऑर्डर्स",products:"उत्पादने",merchant:"व्यापारी",tagline:"व्यापारी · ऑर्डर · उत्पादन",rev:"डिलिव्हर झालेले उत्पन्न",newo:"नवीन ऑर्डर्स",low:"कमी साठा",week:"साप्ताहिक ऑर्डर चार्ट",noord:"अजून ऑर्डर नाहीत. नवीन ऑर्डर्स इथे दिसतील.",New:"नवीन",Packed:"पॅक झाले",Delivered:"डिलिव्हर झाले",mark:"बदला:",pname:"उत्पादनाचे नाव",price:"किंमत ₹",stock:"साठा",add:"उत्पादन जोडा",noprod:"उत्पादने नाहीत. वर पहिले जोडा.",instock:"साठ्यात",plus5:"5 साठा जोडा",del:"उत्पादन काढा",shop:"दुकानाचे नाव",phone:"फोन",open:"ऑर्डरसाठी खुले",closed:"बंद",save:"बदल जतन करा",reset:"डेमो डेटा रीसेट करा",days:["सोम","मंगळ","बुध","गुरू","शुक्र","शनि","रवि"]},
+kn:{fbfail:"Firebase ಲೋಡ್ ಆಗಲಿಲ್ಲ. ಇಂಟರ್ನೆಟ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ತೆರೆಯಿರಿ.",sendfail:"OTP ಕಳುಹಿಸಲಾಗಲಿಲ್ಲ. ಸಂಖ್ಯೆ ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",photo:"ವಸ್ತುವಿನ ಫೋಟೋ (ಐಚ್ಛಿಕ)",shopph:"ಅಂಗಡಿಯ ಫೋಟೋಗಳು",addph:"ಅಂಗಡಿಯ ಫೋಟೋ ಸೇರಿಸಿ",full:"ಸ್ಟೋರೇಜ್ ತುಂಬಿದೆ. ಕೆಲವು ಫೋಟೋಗಳನ್ನು ಅಳಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",login:"ವ್ಯಾಪಾರಿ ಲಾಗಿನ್",mobile:"ಮೊಬೈಲ್ ಸಂಖ್ಯೆ",sendotp:"OTP ಕಳುಹಿಸಿ",otp:"6 ಅಂಕಿಯ OTP ನಮೂದಿಸಿ",verify:"ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಲಾಗಿನ್ ಮಾಡಿ",badph:"ಸರಿಯಾದ 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ.",badotp:"ತಪ್ಪಾದ OTP. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",demo:"ಡೆಮೊ ಮೋಡ್: SMS ಸೇವೆ ಜೋಡಿಸಿಲ್ಲ, ಆದ್ದರಿಂದ ನಿಮ್ಮ OTP:",logout:"ಲಾಗ್ ಔಟ್",cust:"ಗ್ರಾಹಕರ ಹೆಸರು",items:"ವಸ್ತುಗಳು",total:"ಒಟ್ಟು ₹",addo:"ಆರ್ಡರ್ ಸೇರಿಸಿ",dash:"ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",orders:"ಆರ್ಡರ್‌ಗಳು",products:"ಉತ್ಪನ್ನಗಳು",merchant:"ವ್ಯಾಪಾರಿ",tagline:"ವ್ಯಾಪಾರಿ · ಆರ್ಡರ್ · ಉತ್ಪನ್ನ",rev:"ವಿತರಿಸಿದ ಆದಾಯ",newo:"ಹೊಸ ಆರ್ಡರ್‌ಗಳು",low:"ಕಡಿಮೆ ಸ್ಟಾಕ್",week:"ವಾರದ ಆರ್ಡರ್ ಚಾರ್ಟ್",noord:"ಇನ್ನೂ ಆರ್ಡರ್‌ಗಳಿಲ್ಲ. ಹೊಸ ಆರ್ಡರ್‌ಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ.",New:"ಹೊಸದು",Packed:"ಪ್ಯಾಕ್ ಆಗಿದೆ",Delivered:"ವಿತರಣೆಯಾಗಿದೆ",mark:"ಬದಲಿಸಿ:",pname:"ಉತ್ಪನ್ನದ ಹೆಸರು",price:"ಬೆಲೆ ₹",stock:"ಸ್ಟಾಕ್",add:"ಉತ್ಪನ್ನ ಸೇರಿಸಿ",noprod:"ಉತ್ಪನ್ನಗಳಿಲ್ಲ. ಮೇಲೆ ಮೊದಲನೆಯದನ್ನು ಸೇರಿಸಿ.",instock:"ಸ್ಟಾಕ್‌ನಲ್ಲಿದೆ",plus5:"5 ಸ್ಟಾಕ್ ಸೇರಿಸಿ",del:"ಉತ್ಪನ್ನ ಅಳಿಸಿ",shop:"ಅಂಗಡಿಯ ಹೆಸರು",phone:"ಫೋನ್",open:"ಆರ್ಡರ್‌ಗಳಿಗೆ ತೆರೆದಿದೆ",closed:"ಮುಚ್ಚಿದೆ",save:"ಬದಲಾವಣೆ ಉಳಿಸಿ",reset:"ಡೆಮೊ ಡೇಟಾ ರೀಸೆಟ್ ಮಾಡಿ",days:["ಸೋಮ","ಮಂಗಳ","ಬುಧ","ಗುರು","ಶುಕ್ರ","ಶನಿ","ಭಾನು"]}};
+var lang="te";
+try{lang=localStorage.getItem(KEY+"_l")||"te"}catch(e){}
+function L(){return T[lang]||T.en}
+function t(k){return L()[k]||T.en[k]}
+var API=""; /* paste your OTP server URL here, e.g. https://your-server.com */
+var FB={apiKey:"AIzaSyAYdOe2hwbiWyXB4xw1nw5MxHpxRJ90G-A",authDomain:"ai-sameer.firebaseapp.com",projectId:"ai-sameer",storageBucket:"ai-sameer.firebasestorage.app",messagingSenderId:"863476808664",appId:"1:863476808664:web:cdd86c3eefd9a4fd3850ad"};
+var fbWant=!!FB.apiKey,fbOn=false,auth=null,fdb=null,confirmation=null,verifier=null,uid="";
+var phone="",pending=null,otpCode="",err="",db=null;
+function blank(p){return {merchant:{name:"",phone:p,open:true},products:[],orders:[]}}
+try{phone=localStorage.getItem(KEY+"_s")||"";if(phone){db=JSON.parse(localStorage.getItem(KEY+"_d"+phone))}}catch(e){db=null}
+if(phone&&!db)db=blank(phone);
+function save(){try{localStorage.setItem(KEY+"_d"+phone,JSON.stringify(db));return true}catch(e){return false}}
+function persist(){if(!save())alert(t("full"));render()}
+function shrink(f,m,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var s=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",0.65))};im.src=r.result};r.readAsDataURL(f)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var flow=["New","Packed","Delivered"];
+function render(){
+ var v=document.getElementById("view"),h="";
+ document.getElementById("tag").textContent=t("tagline");document.documentElement.lang=lang;document.getElementById("lg").value=lang;
+ var nv=document.getElementById("nav");
+ if(!db){nv.style.display="none";
+  h+='<h2>'+t("login")+'</h2>';
+  if(!pending)h+='<form id="lf"><input name="ph" type="tel" inputmode="numeric" maxlength="14" placeholder="'+t("mobile")+'" aria-label="'+t("mobile")+'" required>'+(API?'<select name="ch" aria-label="OTP"><option value="sms">SMS</option><option value="whatsapp">WhatsApp</option></select>':'')+'<button>'+(API||fbWant?t("sendotp"):t("login"))+'</button></form>';
+  else h+='<form id="of"><p>+91 '+pending+'</p><input name="o" inputmode="numeric" maxlength="6" placeholder="'+t("otp")+'" aria-label="'+t("otp")+'" required><button>'+t("verify")+'</button></form>'+(API||fbWant?'':'<div class="empty">'+t("demo")+' <b>'+otpCode+'</b></div>');
+  if(err)h+='<p class="low" role="alert">'+err+'</p>';
+  v.innerHTML=h;return}
+ nv.style.display="";
+ if(tab=="dash"){
+  var rev=0,nw=0;db.orders.forEach(function(o){if(o.status=="Delivered")rev+=o.total;if(o.status=="New")nw++});
+  var low=db.products.filter(function(p){return p.stock<=5}).length;
+  var days=L().days,vals=[0,0,0,0,0,0,0];vals[(new Date().getDay()+6)%7]=Math.min(100,db.orders.length*10);
+  h+='<h2>'+esc(db.merchant.name||t("merchant"))+'</h2><div class="stats"><div class="stat"><b>₹'+rev+'</b><span>'+t("rev")+'</span></div><div class="stat"><b>'+nw+'</b><span>'+t("newo")+'</span></div><div class="stat"><b>'+db.products.length+'</b><span>'+t("products")+'</span></div><div class="stat"><b class="'+(low?"low":"")+'">'+low+'</b><span>'+t("low")+'</span></div></div><div class="bars" role="img" aria-label="'+t("week")+'">';
+  vals.forEach(function(x,i){h+='<div style="height:'+x+'%"><i>'+days[i]+'</i></div>'});
+  h+='</div><br>';
+ }
+ if(tab=="orders"){
+  h+='<h2>'+t("orders")+'</h2><form id="ordf"><input name="c" placeholder="'+t("cust")+'" required><input name="i" placeholder="'+t("items")+'" required><input name="t" type="number" min="0" placeholder="'+t("total")+'" required><button>'+t("addo")+'</button></form>';
+  if(!db.orders.length)h+='<div class="empty">'+t("noord")+'</div>';
+  db.orders.slice().reverse().forEach(function(o){
+   var i=flow.indexOf(o.status),nx=flow[i+1];
+   h+='<div class="row"><div><h3>#'+o.id+' · '+esc(o.cust)+'</h3><p>'+esc(o.items)+' — ₹'+o.total+'</p></div><div style="text-align:right"><span class="tag '+o.status+'">'+t(o.status)+'</span>';
+   if(nx)h+='<br><br><button data-adv="'+o.id+'">'+t("mark")+' '+t(nx)+'</button>';
+   h+='</div></div>';
+  });
+ }
+ if(tab=="products"){
+  h+='<h2>'+t("products")+'</h2><form id="pf"><input name="n" placeholder="'+t("pname")+'" required><div class="two"><input name="p" type="number" min="0" placeholder="'+t("price")+'" required><input name="s" type="number" min="0" placeholder="'+t("stock")+'" required></div><label class="lb">'+t("photo")+'</label><input name="im" type="file" accept="image/*"><button>'+t("add")+'</button></form>';
+  if(!db.products.length)h+='<div class="empty">'+t("noprod")+'</div>';
+  db.products.forEach(function(p){
+   h+='<div class="row">'+(p.img?'<img class="th" alt="" src="'+p.img+'">':'')+'<div style="flex:1"><h3>'+esc(p.name)+'</h3><p>₹'+p.price+' · <span class="'+(p.stock<=5?"low":"")+'">'+p.stock+' '+t("instock")+'</span></p></div><div><button class="ghost" data-st="'+p.id+'" aria-label="'+t("plus5")+'">+5</button> <button class="ghost" data-del="'+p.id+'" aria-label="'+t("del")+'">✕</button></div></div>';
+  });
+ }
+ if(tab=="merchant"){
+  h+='<h2>'+t("merchant")+'</h2><form id="mf"><input name="n" value="'+esc(db.merchant.name)+'" aria-label="'+t("shop")+'" required><input name="ph" value="'+esc(db.merchant.phone)+'" aria-label="'+t("phone")+'"><select name="o" aria-label="Shop status"><option value="1"'+(db.merchant.open?" selected":"")+'>'+t("open")+'</option><option value="0"'+(db.merchant.open?"":" selected")+'>'+t("closed")+'</option></select><button>'+t("save")+'</button></form><h2>'+t("shopph")+'</h2><div class="gal">'+(db.shop||[]).map(function(s,i){return '<div class="gi"><img alt="" src="'+s+'"><button class="ghost" data-dsp="'+i+'" aria-label="'+t("del")+'">✕</button></div>'}).join("")+'</div><input type="file" id="sp" accept="image/*" multiple aria-label="'+t("addph")+'"><br><br><button class="ghost" id="rs">'+t("logout")+'</button>';
+ }
+ v.innerHTML=h;
+ var names={dash:t("dash"),orders:t("orders"),products:t("products"),merchant:t("merchant")},n="";
+ for(var k in names)n+='<button data-tab="'+k+'"'+(k==tab?' aria-current="page"':"")+'>'+names[k]+'</button>';
+ document.getElementById("nav").innerHTML=n;
+}
+document.addEventListener("click",function(e){
+ var t=e.target,d=t.dataset;
+ if(d.tab){tab=d.tab;render();return}
+ if(d.adv){var o=db.orders.find(function(x){return x.id==d.adv});o.status=flow[flow.indexOf(o.status)+1];save();render()}
+ if(d.st){db.products.find(function(x){return x.id==d.st}).stock+=5;save();render()}
+ if(d.del){db.products=db.products.filter(function(x){return x.id!=d.del});save();render()}
+ if(d.dsp){db.shop.splice(+d.dsp,1);save();render()}
+ if(t.id=="rs"){if(fbOn)auth.signOut();try{localStorage.removeItem(KEY+"_s")}catch(x){}phone="";db=null;pending=null;err="";tab="dash";render()}
+});
+document.addEventListener("submit",function(e){
+ e.preventDefault();var f=e.target,v=f.elements;
+ if(f.id=="lf"){var ph=v.ph.value.replace(/\D/g,"").slice(-10);if(ph.length!=10){err=t("badph");render();return}err="";if(fbWant){if(!fbOn){err=t("fbfail");render();return}
+  try{if(!verifier)verifier=new firebase.auth.RecaptchaVerifier("rcv",{size:"invisible"})}catch(x){}
+  auth.signInWithPhoneNumber("+91"+ph,verifier).then(function(c){confirmation=c;pending=ph;render()}).catch(function(){err=t("sendfail");try{verifier.clear()}catch(x){}verifier=null;render()});return}
+  if(!API){pending=ph;enter();render();return}
+  call("/send-otp",{phone:ph,channel:v.ch.value},function(r){if(r&&r.sent){pending=ph}else{err=t("sendfail")}render()});return}
+ if(f.id=="of"){var cd=v.o.value.trim();
+  if(fbWant){confirmation.confirm(cd).catch(function(){err=t("badotp");render()});return}if(!API){if(cd==otpCode)enter();else err=t("badotp");render();return}
+  call("/verify-otp",{phone:pending,code:cd},function(r){if(r&&r.approved)enter();else err=t("badotp");render()});return}
+ if(f.id=="ordf"){db.orders.push({id:100+db.orders.length+1,cust:v.c.value.trim(),items:v.i.value.trim(),total:+v.t.value,status:"New"})}
+ if(f.id=="pf"){var pr={id:Date.now(),name:v.n.value.trim(),price:+v.p.value,stock:+v.s.value,img:""},fl=v.im.files[0];if(fl){shrink(fl,320,function(d){pr.img=d;db.products.push(pr);persist()});return}db.products.push(pr)}
+ if(f.id=="mf"){db.merchant={name:v.n.value.trim(),phone:v.ph.value,open:v.o.value=="1"}}
+ save();render();
+});
+document.addEventListener("change",function(e){if(e.target.id=="lg"){lang=e.target.value;try{localStorage.setItem(KEY+"_l",lang)}catch(x){}render()}});
+document.addEventListener("change",function(e){if(e.target.id=="sp"){var fs=Array.prototype.slice.call(e.target.files),n=fs.length;db.shop=db.shop||[];fs.forEach(function(f){shrink(f,800,function(d){if(db.shop.length<8)db.shop.push(d);if(--n==0)persist()})})}});
+function enter(){phone=pending;pending=null;err="";try{localStorage.setItem(KEY+"_s",phone);db=JSON.parse(localStorage.getItem(KEY+"_d"+phone))}catch(x){db=null}if(!db)db=blank(phone)}
+function call(p,b,cb){fetch(API+p,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).then(function(r){return r.json()}).then(cb).catch(function(){cb(null)})}
+/* Firebase sign-in (phone OTP) */
+if(fbWant){phone="";db=null;try{firebase.initializeApp(FB);auth=firebase.auth();if(firebase.firestore)fdb=firebase.firestore();fbOn=true}catch(e){}}
+if(fbOn)auth.onAuthStateChanged(function(u){if(u&&u.phoneNumber){phone=u.phoneNumber.replace("+91","");uid=u.uid;pending=null;err=""}else{phone="";uid=""}if(phone){pending=phone;enter();pending=null}else{db=null};render()});
+/* fallback: some preview apps block form submission; run the form handler ourselves */
+var subF=null;
+function arm(f){subF=f;setTimeout(function(){var g=subF;subF=null;if(g&&g.checkValidity())g.dispatchEvent(new Event("submit",{bubbles:true,cancelable:true}))},80)}
+document.addEventListener("submit",function(){subF=null},true);
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("button");if(b&&b.form&&b.type=="submit")arm(b.form)});
+document.addEventListener("keydown",function(e){if(e.key=="Enter"&&e.target.tagName=="INPUT"&&e.target.form)arm(e.target.form)});
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(function(){});
+render();
+</script>
+</body>
+</html>
